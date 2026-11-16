@@ -1,0 +1,31 @@
+spring:
+  application:
+    name: fragetool
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/fragetool}
+    username: ${DB_USER:fragetool}
+    password: ${DB_PASSWORD:fragetool}
+  jpa:
+    hibernate:
+      # Das Schema kommt ausschließlich aus Flyway (db/migration).
+      # Empfehlung: auf "validate" stellen, sobald der erste Start geklappt hat.
+      # Dann meldet Hibernate beim Start, wenn Entities und Schema nicht zusammenpassen.
+      ddl-auto: none
+    # Lazy-Beziehungen dürfen auch im Controller noch geladen werden.
+    open-in-view: true
+  flyway:
+    enabled: true
+  servlet:
+    multipart:
+      # etwas über dem fachlichen Limit von 5 MB, damit ImageProcessor die deutsche Meldung liefert
+      max-file-size: 6MB
+      max-request-size: 7MB
+
+server:
+  port: ${PORT:8080}
+  servlet:
+    session:
+      timeout: 8h
+      cookie:
+        same-site: lax
+        http-only: true

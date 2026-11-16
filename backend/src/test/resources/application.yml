@@ -1,0 +1,12 @@
+# Testprofil: H2 im Arbeitsspeicher, Schema direkt aus den Entities. Kein Docker nötig.
+spring:
+  datasource:
+    url: jdbc:h2:mem:fragetool;DB_CLOSE_DELAY=-1
+    username: sa
+    password: ""
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    open-in-view: true
+  flyway:
+    enabled: false

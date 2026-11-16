@@ -1,0 +1,29 @@
+# Baut und testet bei jedem Push. Benötigt einen GitLab-Runner mit Docker-Executor.
+stages: [test]
+
+backend:
+  stage: test
+  image: maven:3.9-eclipse-temurin-21
+  variables:
+    MAVEN_OPTS: "-Dmaven.repo.local=$CI_PROJECT_DIR/.m2/repository"
+  cache:
+    paths: [.m2/repository]
+  script:
+    - cd backend
+    - mvn -B verify
+  artifacts:
+    when: always
+    paths: [backend/target/site/jacoco]
+    reports:
+      junit: backend/target/surefire-reports/TEST-*.xml
+
+frontend:
+  stage: test
+  image: node:24-alpine
+  cache:
+    paths: [frontend/node_modules]
+  script:
+    - cd frontend
+    - npm ci
+    - npm run build
+    - npm test
