@@ -17,6 +17,7 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeSet;
 import java.util.UUID;
@@ -129,7 +130,8 @@ public abstract class Question {
         if (newTags != null) {
             for (String tag : newTags) {
                 if (tag != null && !tag.isBlank()) {
-                    this.tags.add(tag.strip().toLowerCase());
+                    // Locale.ROOT: sonst wird "IP" auf Rechnern mit türkischer Sprache zu "ıp"
+                    this.tags.add(tag.strip().toLowerCase(Locale.ROOT));
                 }
             }
         }

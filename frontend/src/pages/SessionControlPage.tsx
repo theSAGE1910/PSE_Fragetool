@@ -29,7 +29,7 @@ export function SessionControlPage() {
  * vorzeitig beenden (/MK260/), Freitext freigeben (/MK295/), Scoreboard einblenden (/MK320/).
  */
 function SessionControl({ session }: { session: SessionDto }) {
-  const { state, offsetMs, connected } = useSessionState(session.joinCode);
+  const { state, offsetMs, connected, reload } = useSessionState(session.joinCode);
   const [catalog, setCatalog] = useState<QuestionDto[]>([]);
   const [selected, setSelected] = useState("");
   const [quickType, setQuickType] = useState<QuestionType>("SINGLE_CHOICE");
@@ -68,7 +68,9 @@ function SessionControl({ session }: { session: SessionDto }) {
     } catch (e) {
       setError(errorMessage(e));
     }
-  }, []);
+    // Nicht nur auf die WebSocket-Benachrichtigung warten: Die eigene Aktion soll sofort sichtbar sein.
+    await reload();
+  }, [reload]);
 
   return (
     <main className="page">

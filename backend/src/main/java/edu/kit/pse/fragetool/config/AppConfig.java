@@ -4,7 +4,6 @@ import edu.kit.pse.fragetool.question.ImageProcessor;
 import edu.kit.pse.fragetool.run.ScoringStrategy;
 import edu.kit.pse.fragetool.run.StandardScoring;
 import edu.kit.pse.fragetool.session.ConsonantCodeGenerator;
-import edu.kit.pse.fragetool.session.DisplayNameGenerator;
 import edu.kit.pse.fragetool.session.DisplayNameLengthPolicy;
 import java.security.SecureRandom;
 import java.time.Clock;
@@ -24,6 +23,7 @@ public class AppConfig {
         return Clock.systemUTC();
     }
 
+    /** Erzeugt Beitrittscodes (/MK110/) und Anzeigenamen (/MK171/); einzige Bean beider Typen. */
     @Bean
     public ConsonantCodeGenerator consonantCodeGenerator() {
         return new ConsonantCodeGenerator(new SecureRandom(), new DisplayNameLengthPolicy());

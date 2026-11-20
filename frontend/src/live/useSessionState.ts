@@ -5,8 +5,9 @@ import { publicApi } from "../api/participant";
 import type { LiveMessage, SessionState } from "../api/types";
 import { clockOffset } from "./countdown";
 
-const RECONNECT_DELAY_MS = 2000;
-const HEARTBEAT_MS = 10000;
+/** Wartezeit bis zum nächsten Verbindungsversuch; /MK410/ verlangt höchstens 5 s. */
+export const RECONNECT_DELAY_MS = 2000;
+export const HEARTBEAT_MS = 10000;
 
 export interface LiveSession {
   /** Aktueller Zustand der Session, null solange er lädt. */
@@ -17,6 +18,8 @@ export interface LiveSession {
   connected: boolean;
   /** Ob die Session nicht (mehr) existiert. */
   notFound: boolean;
+  /** Zustand sofort neu laden, z. B. direkt nach einer eigenen Aktion. */
+  reload: () => Promise<void>;
 }
 
 /**
@@ -84,5 +87,5 @@ export function useSessionState(joinCode: string, onStateChanged?: () => void): 
     };
   }, [joinCode, reload]);
 
-  return { state, offsetMs, connected, notFound };
+  return { state, offsetMs, connected, notFound, reload };
 }

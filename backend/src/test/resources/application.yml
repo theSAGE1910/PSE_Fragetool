@@ -10,3 +10,8 @@ spring:
     open-in-view: true
   flyway:
     enabled: false
+  servlet:
+    multipart:
+      # wie im Betrieb: knapp über dem fachlichen Limit von 5 MB (/MK440/)
+      max-file-size: 6MB
+      max-request-size: 7MB
