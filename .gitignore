@@ -9,3 +9,9 @@ frontend/dist/
 .vscode/
 *.iml
 .DS_Store
+
+# Testberichte
+frontend/e2e-report/
+frontend/test-results/
+frontend/playwright-report/
+loadtest/*.json
