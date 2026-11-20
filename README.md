@@ -39,37 +39,52 @@ und lädt geänderte Dateien sofort neu.
 
 ## Tests
 
+Welcher Test welches Musskriterium prüft, steht in `docs/TESTMATRIX.md`.
+
 ```bash
-cd backend && mvn verify      # Unit-Tests + Integrationstest (H2 im Arbeitsspeicher), JaCoCo-Bericht in target/site/jacoco
-cd frontend && npm test       # Vitest
+cd backend && mvn verify      # JUnit: Unit- und Integrationstests (H2), JaCoCo-Bericht in target/site/jacoco
+                              # bricht ab, wenn die Zeilenüberdeckung unter 80 % liegt (/P30/)
+cd frontend && npm test       # Vitest: Komponenten- und Hook-Tests
 cd frontend && npm run build  # TypeScript-Prüfung + Produktions-Build
 ```
 
-## Stand dieses Grundgerüsts
+Browsertests und Messungen laufen gegen die gestartete Anwendung (`docker compose up --build`):
+
+```bash
+cd frontend
+npm run e2e:install                         # einmalig: Chromium, Firefox und WebKit herunterladen
+npm run e2e -- --project=dozent-chrome --project=dozent-firefox          # /MK350/
+npm run e2e -- --project=teilnehmer-360px --project=teilnehmer-iphone    # /MK340/, /MK410/
+npm run e2e -- --project=messung            # /P40/ und /P50/ (dauert einige Minuten)
+k6 run ../loadtest/k6-200-teilnehmer.js     # /P60/: 200 WebSocket-Verbindungen (k6 separat installieren)
+```
+
+## Stand
 
 Umgesetzt sind alle Musskriterien des Pflichtenhefts. Die Wunschkriterien sind vorbereitet
 (Erweiterungspunkte in `docs/ARCHITEKTUR.md`), aber nicht umgesetzt.
 
-**Geprüft (beim Erstellen des Grundgerüsts ausgeführt):**
+**Geprüft:**
 
-- Frontend: TypeScript-Prüfung, Produktions-Build und Vitest-Tests laufen fehlerfrei.
-- Backend-Domänenlogik (Fragetypen, Bewertung, Zeitablauf, Anzeigenamen, Scoreboard, Bildverkleinerung):
-  28 Unit-Tests laufen fehlerfrei.
+- Backend: `mvn verify` mit dem ersten Integrationstest und 28 Unit-Tests lief auf einem Teamrechner fehlerfrei
+  (16.11.2026, Zeilenüberdeckung damals 78 %).
+- Frontend: TypeScript-Prüfung, Produktions-Build und alle Vitest-Tests laufen fehlerfrei.
 - Datenbankschema: `V1__init.sql` läuft fehlerfrei in PostgreSQL 16; alle Spalten passen zu den Entities.
 
-**Noch nicht geprüft (bitte als Erstes tun):**
+**Noch nicht ausgeführt:**
 
-- Die Spring-Schicht (Controller, Services, Security, WebSocket) und `FlowIntegrationTest` konnten in der
-  Erstellungsumgebung nicht kompiliert werden, weil Maven Central dort gesperrt war. Der erste Schritt ist
-  deshalb `cd backend && mvn verify`. Kleinere Compilerfehler oder ein falscher Abhängigkeitsname sind möglich.
-- `Dockerfile` und `docker-compose.yml` wurden nicht ausgeführt.
-- Tests auf echten Smartphones (Chrome auf Android, Safari auf iOS) und der Lasttest mit 200 Verbindungen fehlen.
+- Die neuen Backend-Testklassen (`DozentKontoTest`, `FragenkatalogTest`, `FragenbildTest`,
+  `SessionUndTeilnahmeTest`, `FragendurchfuehrungTest`, `ScoreboardAnzeigeTest`, `LiveBenachrichtigungTest`,
+  `DatensparsamkeitTest`, `WebSchnittstelleTest`, `ParticipantServiceTest`, `RunSchedulerTest`) wurden ohne
+  Spring-Bibliotheken geschrieben und noch nicht kompiliert. Erster Schritt: `cd backend && mvn verify`.
+- Playwright-Tests, k6-Lasttest, `Dockerfile` und `docker-compose.yml`.
+- Tests auf echten Smartphones.
 
 ## Bekannte offene Punkte
 
 - CSRF-Schutz der Dozenten-API ist abgeschaltet (`SecurityConfig`, TODO). Vor einem echten Einsatz aktivieren.
 - `spring.jpa.hibernate.ddl-auto` steht auf `none`. Nach dem ersten erfolgreichen Start auf `validate` stellen.
 - Wird eine Katalogfrage gelöscht, verschwinden auch ihre früheren Durchläufe und Antworten (Punkte bleiben).
-- Es gibt noch kein ESLint/Checkstyle und keinen Lasttest (k6/Gatling).
+- Es gibt noch kein ESLint/Checkstyle.
 - Starten zwei Browser-Tabs desselben Dozenten gleichzeitig eine Frage in derselben Session, kann die Regel
   „höchstens eine Frage gleichzeitig“ (/MK210/) im selben Augenblick umgangen werden. Abhilfe: Sperre auf der Session.

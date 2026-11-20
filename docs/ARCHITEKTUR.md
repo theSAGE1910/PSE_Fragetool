@@ -46,6 +46,9 @@ Es gibt keine zyklischen Abhängigkeiten zwischen den Paketen.
 
 ## Musskriterien → Code → Test
 
+Die Testspalte zeigt den ersten Stand. Die vollständige, aktuelle Zuordnung aller Musskriterien zu
+automatisierten Tests steht in `docs/TESTMATRIX.md`.
+
 „Unit“ = Unit-Test im Backend, „Flow“ = `FlowIntegrationTest`, „Vitest“ = Frontend-Test.
 
 | Kriterium | Umsetzung | Test |
